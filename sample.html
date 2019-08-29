@@ -1,0 +1,50 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+       
+     <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+    $("#Button1").click(function () {
+        BuildTable();
+    });
+});
+
+function BuildTable() {
+    //ajax call to build table to go here
+	var row = "";
+        $.ajax({
+            type: "GET",
+            url: "https://api.mapbox.com/directions-matrix/v1/mapbox/driving/72.8777,19.076;75.8577,22.7196;73.8567,18.5204;79.4304,28.367?sources=0&destinations=1;2;3&access_token=pk.eyJ1IjoiYW5hbHl0aWNzbG4iLCJhIjoiY2pyMXZkYmMyMHl6eDQzcGN0cGl1cDZjbyJ9.J2MLiev145UG6Jnp3HT2Vg",
+            //data: "{}",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (msg) {
+			console.log(msg)
+			
+                $.each(msg.destinations, function (index, obj) {
+                    row += "<tr><td>" + obj.distance + "</td><td>" + obj.location[0] + "</td><td>" + obj.name + "</td></tr>";
+                   
+                });
+
+                $("#tbDetails tbody").append(row);
+            }
+        });
+}
+
+</script>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div>
+
+        <input id="Button1" type="button" value="button" />
+    <table id="tbDetails" width="800" runat="server" clientidmode="Static">
+   <tbody>
+    <tr><td>productcode</td><td>productname</td><td>costprice</td></tr>
+    </tbody>
+    </table>
+    </div>
+    </form>
+</body>
+</html>
