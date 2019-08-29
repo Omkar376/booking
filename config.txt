@@ -1,0 +1,5 @@
+variable:value
+user:lncoretech@logisticsnowdb
+password:JMLQamrM2J3D
+dbname:gst_database_world_demo
+host:logisticsnowdb.mysql.database.azure.com

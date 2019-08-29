@@ -1,5 +1,6 @@
-mysql_host: 'localhost'
-mysql_user: 'root'
+mysql_host: 'logisticsnowdb.mysql.database.azure.com'
+mysql_user: 'lncoretech@logisticsnowdb'
 # Enter your password in field below
 mysql_password: 'root'
 mysql_db: 'Booking'
+mapbox_api_token: 'pk.eyJ1IjoiYW5hbHl0aWNzbG4iLCJhIjoiY2pyMXZkYmMyMHl6eDQzcGN0cGl1cDZjbyJ9.J2MLiev145UG6Jnp3HT2Vg'
