@@ -5,7 +5,7 @@ import random
 import pandas as pd
 import requests
 import json
-from mysql.connector import MySQLConnection, Error
+from mysql.connector import MySQLConnection
 #import mapbox
 from math import radians, cos, sin, asin, sqrt
 
@@ -19,7 +19,7 @@ app.config['MYSQL_HOST'] = db['mysql_host']
 app.config['MYSQL_USER'] = db['mysql_user']
 app.config['MYSQL_PASSWORD'] = db['mysql_password']
 app.config['MYSQL_DB'] = db['mysql_db']
-mysql = MySQL(app)
+#mysql = MySQL(app)
 
 CONFIG = {}
 CONFIG["host"] = db['mysql_host']
@@ -32,6 +32,9 @@ conn = MySQLConnection(host = CONFIG["host"],
                   passwd = CONFIG["passwd"],
                   db = CONFIG["db"])
 cur = conn.cursor()
+#cur.execute('delete from orders')
+#cur.execute('update drivers set driver_status = "Available"')
+#conn.commit()
 
 MAPBOX_API_TOKEN = db['mapbox_api_token']
 '''MAPBOX_API_TOKEN = 'pk.eyJ1IjoiYW5hbHl0aWNzbG4iLCJhIjoiY2pyMXZkYmMyMHl6eDQzcGN0cGl1cDZjbyJ9.J2MLiev145UG6Jnp3HT2Vg'
@@ -73,10 +76,8 @@ def min_estimated_time_index(origin_list, destination_list):
     query_string =  lat_lon_string[:-1] + f"?sources=0&destinations={destination_string}"   
     query_string = query_string + f"&access_token={MAPBOX_API_TOKEN}"
     url = "https://api.mapbox.com/directions-matrix/v1/mapbox/driving/"+ query_string
-    print(url)
     response = requests.get(url)
     response_data = response.json()
-    print(response_data)
     estimated_time_list = response_data['durations'][0]
     min_index = estimated_time_list.index(min(estimated_time_list))
     return min_index
@@ -134,35 +135,36 @@ def index():
         customer_latitude = orderDetails['customer_latitude']
         customer_longitude = orderDetails['customer_longitude']
         customer_address = orderDetails['customer_address']
-        #cur = mysql.connection.cursor()
         cur = conn.cursor()
         driver_name = assign_driver(cur, customer_latitude, customer_longitude)
-        #driver_name = "test"       
         cur.execute("INSERT INTO orders(order_id, customer_name, latitude, longitude, address, driver_name) VALUES(%s, %s , %s , %s , %s , %s)"
                     ,(order_id, customer_name, customer_latitude, customer_longitude, customer_address, driver_name))
         cur.execute("UPDATE drivers SET driver_status = 'Busy' WHERE driver_name = '%s'"% (driver_name))
-        mysql.connection.commit()
+        conn.commit()
         cur.close()
         return redirect('/driver_status')
     return render_template('index.html')
 
 @app.route('/driver_status')
 def driver_status():
-    #cur = mysql.connection.cursor()
     cur = conn.cursor()
-    cur.execute("SELECT customer_name, driver_name FROM orders;")    
+    cur.execute("SELECT customer_name, driver_name, address FROM orders;")    
     orders_tuple = cur.fetchall()
-    order_df = pd.DataFrame(orders_tuple, columns=['customer_name','driver_name'])
-    cur.execute("SELECT driver_name, driver_status  FROM drivers;")
+    order_df = pd.DataFrame(orders_tuple, columns=['customer_name','driver_name','address'])
+    cur.execute("SELECT driver_name, driver_status, address  FROM drivers;")
     driver_tuple = cur.fetchall()
-    driver_df =  pd.DataFrame(driver_tuple, columns=['driver_name', 'driver_status'])
+    driver_df =  pd.DataFrame(driver_tuple, columns=['driver_name', 'driver_status', 'address'])
     driver_df = driver_df.merge(order_df, left_on='driver_name', right_on='driver_name',how = 'left')
-    #result = driver_df.drop('index', 1)
     result = driver_df
+    result = result.fillna("-")
+    print(result)
     result = list(zip(*[result[c].values.tolist() for c in result]))
-    mysql.connection.commit()
+    print(result)
+    result = [('Driver Name', 'Status', 'Driver Address', 'Customer' ,'Customer Address')] + result
+    print(result)
+    conn.commit()
     cur.close()    
-    return render_template('driver_status.html',orderDetails = result)
+    return render_template('driver_status.html', driverDetials = result)
 
 if __name__ == '__main__':
     app.run(port=8768)
