@@ -37,8 +37,8 @@ cur = conn.cursor()
 #conn.commit()
 
 MAPBOX_API_TOKEN = db['mapbox_api_token']
-'''MAPBOX_API_TOKEN = 'pk.eyJ1IjoiYW5hbHl0aWNzbG4iLCJhIjoiY2pyMXZkYmMyMHl6eDQzcGN0cGl1cDZjbyJ9.J2MLiev145UG6Jnp3HT2Vg'
-origin_list = {}
+#MAPBOX_API_TOKEN = 'pk.eyJ1IjoiYW5hbHl0aWNzbG4iLCJhIjoiY2pyMXZkYmMyMHl6eDQzcGN0cGl1cDZjbyJ9.J2MLiev145UG6Jnp3HT2Vg'
+'''
 origin_list = []
 destination_list = []
 origin_list.append({'lat' : 19.076,'lon' :72.8777})
@@ -96,9 +96,9 @@ def encode_coordinates(data):
 
 
 def assign_driver(cur, customer_latitude, customer_longitude):
-    cur.execute("SELECT  * FROM drivers WHERE driver_status LIKE '%Available%';")
+    cur.execute("SELECT  * FROM drivers WHERE driverStatus LIKE '%Available%';")
     driver_data = cur.fetchall()
-    driver_df =  pd.DataFrame(driver_data, columns=['driver_name', 'latitude','longitude',	'address','driver_status'])
+    driver_df =  pd.DataFrame(driver_data, columns=['_id','driver_name', 'latitude','longitude',	'address','driver_status'])
     driver_list = driver_df.to_dict('records')
     origin_list = []
     origin_list.append({'lat' : customer_latitude,'lon' :customer_longitude})
@@ -137,9 +137,9 @@ def index():
         customer_address = orderDetails['customer_address']
         cur = conn.cursor()
         driver_name = assign_driver(cur, customer_latitude, customer_longitude)
-        cur.execute("INSERT INTO orders(order_id, customer_name, latitude, longitude, address, driver_name) VALUES(%s, %s , %s , %s , %s , %s)"
+        cur.execute("INSERT INTO orders(orderId, customerName, latitude, longitude, address, driverName) VALUES(%s, %s , %s , %s , %s , %s)"
                     ,(order_id, customer_name, customer_latitude, customer_longitude, customer_address, driver_name))
-        cur.execute("UPDATE drivers SET driver_status = 'Busy' WHERE driver_name = '%s'"% (driver_name))
+        cur.execute("UPDATE drivers SET driverStatus = 'Busy' WHERE driverName = '%s'"% (driver_name))
         conn.commit()
         cur.close()
         return redirect('/driver_status')
@@ -148,10 +148,10 @@ def index():
 @app.route('/driver_status')
 def driver_status():
     cur = conn.cursor()
-    cur.execute("SELECT customer_name, driver_name, address FROM orders;")    
+    cur.execute("SELECT customerName, driverName, address FROM orders;")    
     orders_tuple = cur.fetchall()
     order_df = pd.DataFrame(orders_tuple, columns=['customer_name','driver_name','address'])
-    cur.execute("SELECT driver_name, driver_status, address  FROM drivers;")
+    cur.execute("SELECT driverName, driverStatus, address  FROM drivers;")
     driver_tuple = cur.fetchall()
     driver_df =  pd.DataFrame(driver_tuple, columns=['driver_name', 'driver_status', 'address'])
     driver_df = driver_df.merge(order_df, left_on='driver_name', right_on='driver_name',how = 'left')

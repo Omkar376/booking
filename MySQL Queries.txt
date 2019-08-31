@@ -1,0 +1,17 @@
+Upload Data to Table
+
+LOAD DATA INFILE 'c:/tmp/driver.csv' INTO TABLE driver FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+CREATE DATABASE Booking
+desc locations;
+CREATE DATABASE Booking
+use Booking
+CREATE TABLE drivers (id int NOT NULL AUTO_INCREMENT,driverName VARCHAR(25), latitude FLOAT, longitude FLOAT, address VARCHAR(100), driverStatus VARCHAR(10),
+    PRIMARY KEY (id))
+CREATE TABLE orders (id int NOT NULL AUTO_INCREMENT,order_id VARCHAR(6), customer_name VARCHAR(25), latitude FLOAT, longitude FLOAT, address VARCHAR(100), driver_name VARCHAR(25),PRIMARY KEY (id))
+LOAD DATA INFILE 'D:/BOOKING_Project/drivers.csv' INTO TABLE drivers FIELDS TERMINATED BY ','  LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+drop table drivers
+desc drivers
+select * from drivers
+drop database Booking
+CREATE TABLE drivers (driver_id VARCHAR(6), driver_name VARCHAR(25), latitude FLOAT, longitude FLOAT, address VARCHAR(100), order_id VARCHAR(6), status VARCHAR(10))

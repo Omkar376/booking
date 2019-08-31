@@ -35,13 +35,24 @@ function BuildTable() {
 </script>
 </head>
 <body>
+<form method="POST" action="">
+  Customer Name <input type="text" name="customer_name" />
+  <br>
+  Customer Address <input type="text" name="customer_address" />
+  <br>
+  Customer Latitude <input type="text" name="customer_latitude" />
+  <br>
+  Customer Longitude <input type="text" name="customer_longitude" />
+  <br>
+
+</form>
     <form id="form1" runat="server">
     <div>
 
-        <input id="Button1" type="button" value="button" />
+        <input id="Button1" type="submit" value="Submit" />
     <table id="tbDetails" width="800" runat="server" clientidmode="Static">
    <tbody>
-    <tr><td>productcode</td><td>productname</td><td>costprice</td></tr>
+    <tr><td>Driver Name</td><td>Driver Status</td><td>Customer Name</td></tr>
     </tbody>
     </table>
     </div>
