@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>submit demo</title>
+  <style>
+  p {
+    margin: 0;
+    color: blue;
+  }
+  div,p {
+    margin-left: 10px;
+  }
+  span {
+    color: red;
+  }
+  </style>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+</head>
+<body>
+ 
+<p>Type 'correct' to validate.</p>
+<form action="javascript:alert( 'success!' );">
+  <div>
+    <input type="text">
+    <input type="submit">
+  </div>
+   <table id="tbDetails" width="800" runat="server" clientidmode="Static">
+   <tbody>
+    <tr><td>Driver Name</td><td>Driver Status</td><td>Customer Name</td></tr>
+    </tbody>
+    </table>
+</form>
+   
+<span></span>
+ 
+<script>
+$( "form" ).submit(function( event ) {
+  var row = "";
+        $.ajax({
+            type: "GET",
+            url: "https://api.mapbox.com/directions-matrix/v1/mapbox/driving/72.8777,19.076;75.8577,22.7196;73.8567,18.5204;79.4304,28.367?sources=0&destinations=1;2;3&access_token=pk.eyJ1IjoiYW5hbHl0aWNzbG4iLCJhIjoiY2pyMXZkYmMyMHl6eDQzcGN0cGl1cDZjbyJ9.J2MLiev145UG6Jnp3HT2Vg",
+            //data: "{}",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (msg) {
+			console.log(msg)
+			
+                $.each(msg.destinations, function (index, obj) {
+                    row += "<tr><td>" + obj.distance + "</td><td>" + obj.location[0] + "</td><td>" + obj.name + "</td></tr>";
+                   
+                });
+
+                $("#tbDetails tbody").append(row);
+            }
+        });
+});
+</script>
+ 
+</body>
+</html>
